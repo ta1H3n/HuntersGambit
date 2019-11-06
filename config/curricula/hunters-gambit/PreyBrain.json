@@ -1,0 +1,10 @@
+{
+    "measure" : "progress",
+    "thresholds" : [0.1, 0.3],
+    "min_lesson_length": 50,
+    "signal_smoothing" : true, 
+    "parameters" : 
+    {
+        "arena_scale" : [1.0, 2.0, 4.0]
+    }
+}

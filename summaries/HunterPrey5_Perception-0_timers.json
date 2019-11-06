@@ -1,0 +1,108 @@
+{
+  "name": "root",
+  "gauges": [
+    {
+      "name": "HunterBrain.mean_reward",
+      "value": 0.7016156559475348,
+      "min": -0.14695995403453707,
+      "max": 0.9767467432128925,
+      "count": 100
+    },
+    {
+      "name": "PreyBrain.mean_reward",
+      "value": -0.7016156559475348,
+      "min": -0.9767467432128925,
+      "max": 0.14695995403453707,
+      "count": 100
+    }
+  ],
+  "total": 1894.1333596000002,
+  "count": 1,
+  "self": 15.005068499983281,
+  "children": [
+    {
+      "name": "TrainerController.advance",
+      "total": 1879.128291100017,
+      "count": 100001,
+      "self": 189.61407630006101,
+      "children": [
+        {
+          "name": "env_step",
+          "total": 1372.1059753999516,
+          "count": 100001,
+          "self": 1062.9593837999128,
+          "children": [
+            {
+              "name": "SubprocessEnvManager._take_step",
+              "total": 308.0876004000296,
+              "count": 100001,
+              "self": 4.25820529999703,
+              "children": [
+                {
+                  "name": "PPOPolicy.evaluate",
+                  "total": 303.82939510003257,
+                  "count": 200002,
+                  "self": 303.82939510003257
+                }
+              ]
+            },
+            {
+              "name": "workers",
+              "total": 1.0589912000091157,
+              "count": 100001,
+              "self": 0.0,
+              "children": [
+                {
+                  "name": "worker_root",
+                  "total": 1887.7980093000158,
+                  "count": 100001,
+                  "is_parallel": true,
+                  "self": 911.1286378000032,
+                  "children": [
+                    {
+                      "name": "UnityEnvironment.step",
+                      "total": 976.6693715000126,
+                      "count": 100001,
+                      "is_parallel": true,
+                      "self": 97.1335585999966,
+                      "children": [
+                        {
+                          "name": "UnityEnvironment._generate_step_input",
+                          "total": 16.514346699993677,
+                          "count": 100001,
+                          "is_parallel": true,
+                          "self": 16.514346699993677
+                        },
+                        {
+                          "name": "communicator.exchange",
+                          "total": 863.0214662000224,
+                          "count": 100001,
+                          "is_parallel": true,
+                          "self": 863.0214662000224
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "update_policy",
+          "total": 317.4082394000044,
+          "count": 2904,
+          "self": 106.66682419999881,
+          "children": [
+            {
+              "name": "PPOPolicy.update",
+              "total": 210.74141520000558,
+              "count": 34887,
+              "self": 210.74141520000558
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
