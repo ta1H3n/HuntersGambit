@@ -27,13 +27,13 @@ HunterBrain:
     batch_size: 128
     buffer_size: 512
     use_recurrent: false
-    max_steps: 1.0e5
+    max_steps: 2.0e5
     
 PreyBrain:
     batch_size: 128
     buffer_size: 512
     use_recurrent: false
-    max_steps: 1.0e5
+    max_steps: 2.0e5
 
 RollerBallBrain:
     batch_size: 10
