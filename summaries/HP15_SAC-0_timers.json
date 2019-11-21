@@ -1,0 +1,108 @@
+{
+  "name": "root",
+  "gauges": [
+    {
+      "name": "HunterBrain.mean_reward",
+      "value": 0.8634563212426717,
+      "min": -1.0000000707805157,
+      "max": 0.879736793687028,
+      "count": 200
+    },
+    {
+      "name": "PreyBrain.mean_reward",
+      "value": -0.8600167690904423,
+      "min": -0.8755844052633053,
+      "max": 1.0000000707805157,
+      "count": 200
+    }
+  ],
+  "total": 4754.020429499999,
+  "count": 1,
+  "self": 25.588346099916635,
+  "children": [
+    {
+      "name": "TrainerController.advance",
+      "total": 4728.432083400083,
+      "count": 200001,
+      "self": 265.348547300262,
+      "children": [
+        {
+          "name": "env_step",
+          "total": 1835.0533440999457,
+          "count": 200001,
+          "self": 1388.0181220999898,
+          "children": [
+            {
+              "name": "SubprocessEnvManager._take_step",
+              "total": 444.78796840000746,
+              "count": 200001,
+              "self": 444.78796840000746
+            },
+            {
+              "name": "workers",
+              "total": 2.24725359994844,
+              "count": 200001,
+              "self": 0.0,
+              "children": [
+                {
+                  "name": "worker_root",
+                  "total": 4743.174295699999,
+                  "count": 200001,
+                  "is_parallel": true,
+                  "self": 3519.137550099891,
+                  "children": [
+                    {
+                      "name": "UnityEnvironment.step",
+                      "total": 1224.0367456001075,
+                      "count": 200001,
+                      "is_parallel": true,
+                      "self": 158.12003490032043,
+                      "children": [
+                        {
+                          "name": "UnityEnvironment._generate_step_input",
+                          "total": 27.57505769986039,
+                          "count": 200001,
+                          "is_parallel": true,
+                          "self": 27.57505769986039
+                        },
+                        {
+                          "name": "communicator.exchange",
+                          "total": 1038.3416529999267,
+                          "count": 200001,
+                          "is_parallel": true,
+                          "self": 1038.3416529999267
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "update_policy",
+          "total": 2628.0301919998756,
+          "count": 399845,
+          "self": 4.02940259998104,
+          "children": [
+            {
+              "name": "SACTrainer.update_policy",
+              "total": 2624.0007893998945,
+              "count": 399845,
+              "self": 921.8252231998367,
+              "children": [
+                {
+                  "name": "SACPolicy.update",
+                  "total": 1702.1755662000578,
+                  "count": 199922,
+                  "self": 1702.1755662000578
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

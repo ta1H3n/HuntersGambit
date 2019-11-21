@@ -1,0 +1,78 @@
+{
+  "name": "root",
+  "total": 13.157684699999999,
+  "count": 1,
+  "self": 9.3228119,
+  "children": [
+    {
+      "name": "TrainerController.advance",
+      "total": 3.8348727999999994,
+      "count": 9,
+      "self": 0.08302449999999872,
+      "children": [
+        {
+          "name": "env_step",
+          "total": 3.7518483000000007,
+          "count": 9,
+          "self": 3.3749874,
+          "children": [
+            {
+              "name": "SubprocessEnvManager._take_step",
+              "total": 0.3767808999999982,
+              "count": 9,
+              "self": 0.00041299999999822035,
+              "children": [
+                {
+                  "name": "PPOPolicy.evaluate",
+                  "total": 0.3763679,
+                  "count": 18,
+                  "self": 0.3763679
+                }
+              ]
+            },
+            {
+              "name": "workers",
+              "total": 8.000000000230045e-05,
+              "count": 8,
+              "self": 0.0,
+              "children": [
+                {
+                  "name": "worker_root",
+                  "total": 11.212619200000002,
+                  "count": 8,
+                  "is_parallel": true,
+                  "self": 8.045097400000005,
+                  "children": [
+                    {
+                      "name": "UnityEnvironment.step",
+                      "total": 3.1675217999999976,
+                      "count": 8,
+                      "is_parallel": true,
+                      "self": 0.00818769999999347,
+                      "children": [
+                        {
+                          "name": "UnityEnvironment._generate_step_input",
+                          "total": 0.001308599999999771,
+                          "count": 8,
+                          "is_parallel": true,
+                          "self": 0.001308599999999771
+                        },
+                        {
+                          "name": "communicator.exchange",
+                          "total": 3.1580255000000044,
+                          "count": 8,
+                          "is_parallel": true,
+                          "self": 3.1580255000000044
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
