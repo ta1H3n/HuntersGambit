@@ -287,8 +287,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1283488956}
-  m_LocalRotation: {x: 0.36366567, y: 0.2029588, z: -0.081512466, w: 0.90548927}
-  m_LocalPosition: {x: -7.177683, y: 14.055173, z: -14.6077795}
+  m_LocalRotation: {x: 0.10719981, y: -0.8920156, z: 0.3296607, w: 0.29006946}
+  m_LocalPosition: {x: 11.152586, y: 15.464788, z: 15.421985}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -348,10 +348,10 @@ MonoBehaviour:
       value: 2
     - key: walls
       value: 2
-  hunterRunSpeed: 6
+  hunterRunSpeed: 10
   hunterRotationSpeed: 1
-  preyRunSpeed: 1.7
-  preyRotationSpeed: 1
+  preyRunSpeed: 12
+  preyRotationSpeed: 1.2
   gravityMultiplier: 3
 --- !u!4 &1407690773
 Transform:
@@ -438,13 +438,13 @@ PrefabInstance:
         type: 3}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 11400000, guid: f8006088dd369004d965eceff172463a,
+      objectReference: {fileID: 11400000, guid: c54a67d741e72a240bd0a2618430f505,
         type: 2}
     - target: {fileID: 7566436912958897061, guid: b38f9810a9881594ca0fd999d54b4a34,
         type: 3}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 11400000, guid: b9f0704583c534246a96eadf110e9edd,
+      objectReference: {fileID: 11400000, guid: 05a32f1e30f264e46a85cde517fe880d,
         type: 2}
     - target: {fileID: 7566436914488416859, guid: b38f9810a9881594ca0fd999d54b4a34,
         type: 3}

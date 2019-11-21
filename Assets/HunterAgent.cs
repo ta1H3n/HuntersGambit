@@ -13,7 +13,7 @@ public class HunterAgent : Agent
     HunterAcademy m_Academy;
     public override void InitializeAgent()
     {
-        agentParameters.maxStep = 5000;
+        agentParameters.maxStep = 2000;
         base.InitializeAgent();
         m_Academy = FindObjectOfType<HunterAcademy>();
         h_RayPer = GetComponent<RayPerception>();
@@ -23,20 +23,17 @@ public class HunterAgent : Agent
 
     public override void AgentReset()
     {
-        if (this.transform.localPosition.y < 0)
-        {
-            // If the Agent fell, zero its momentum
-            this.h_rBody.angularVelocity = Vector3.zero;
-            this.h_rBody.velocity = Vector3.zero;
-            this.transform.localPosition = new Vector3(0, 0.5f, 0);
-        }
+        // If the Agent fell, zero its momentum
+        this.h_rBody.angularVelocity = Vector3.zero;
+        this.h_rBody.velocity = Vector3.zero;
+        this.transform.localPosition = new Vector3(0, 0.5f, 0);
     }
 
     public override void CollectObservations()
     {
         var rayDistance = 12f;
         float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
-        string[] detectableObjects = { "Prey", "Arena" };
+        string[] detectableObjects = { "Prey", "Arena", "Food" };
         AddVectorObs(h_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
 
@@ -63,25 +60,30 @@ public class HunterAgent : Agent
         }
         else
         {
-            var action = Mathf.FloorToInt(act[0]);
-            switch (action)
+            var run = Mathf.FloorToInt(act[0]);
+            var turn = Mathf.FloorToInt(act[1]);
+            switch (run)
             {
                 case 1:
                     dirToGo = transform.forward * 1f;
                     break;
                 case 2:
-                    dirToGo = transform.forward * -1f;
+                    dirToGo = transform.forward * -0.5f;
                     break;
-                case 3:
+            }
+            switch (turn)
+            {
+                case 1:
                     rotateDir = transform.up * 1f;
                     break;
-                case 4:
+                case 2:
                     rotateDir = transform.up * -1f;
                     break;
             }
         }
-        transform.Rotate(rotateDir, Time.deltaTime * 150f);
-        h_rBody.AddForce(dirToGo * m_Academy.agentRunSpeed, ForceMode.VelocityChange);
+
+        transform.Rotate(rotateDir, Time.deltaTime * 150f * m_Academy.hunterRotationSpeed);
+        transform.Translate(dirToGo * m_Academy.hunterRunSpeed * Time.deltaTime, Space.World);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -94,8 +96,7 @@ public class HunterAgent : Agent
         // Reached target
         if (distanceToTarget < 1.42f)
         {
-            SetReward(1.0f);
-            Done();
+            AddReward(1.0f);
         }
 
         // Fell off platform

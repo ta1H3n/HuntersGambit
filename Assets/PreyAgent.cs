@@ -5,15 +5,18 @@ using MLAgents;
 public class PreyAgent : Agent
 {
     public Transform Hunter;
+    public Transform Food;
     public GameObject Arena;
 
     Rigidbody rBody;
     HunterAcademy m_Academy;
     RayPerception m_RayPer;
 
+    private float Scale;
+
     public override void InitializeAgent()
     {
-        agentParameters.maxStep = 5000;
+        agentParameters.maxStep = 2000;
         base.InitializeAgent();
         m_Academy = FindObjectOfType<HunterAcademy>();
         rBody = GetComponent<Rigidbody>();
@@ -22,25 +25,19 @@ public class PreyAgent : Agent
 
     public override void AgentReset()
     {
-        float scale = m_Academy.resetParameters["arena_scale"];
-        Debug.Log("scale: " + scale);
-        Arena.transform.localScale = new Vector3(1 * scale, 1, 1 * scale);
+        Scale = m_Academy.resetParameters["arena_scale"];
+        Arena.transform.localScale = new Vector3(1 * Scale, 1, 1 * Scale);
 
         // Move the target to a new spot
-        rBody.angularVelocity = Vector3.zero;
-        rBody.velocity = Vector3.zero;
-        transform.localPosition = new Vector3(
-            (Random.value * 8 - 4) * scale,
-            0.5f,
-            (Random.value * 8 - 4) * scale
-        );
+        RespawnObject(transform);
+        RespawnObject(Food);
     }
 
     public override void CollectObservations()
     {
         var rayDistance = 12f;
         float[] rayAngles = { 20f, 60f, 90f, 120f, 160f, 200f, 240f };
-        string[] detectableObjects = { "Hunter", "Arena" };
+        string[] detectableObjects = { "Hunter", "Arena", "Food" };
         AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
 
@@ -57,59 +54,80 @@ public class PreyAgent : Agent
 
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.Continuous)
         {
+            if (act[0] < 0)
+            {
+                act[0] = act[0] / 2;
+            }
+
             dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
             rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
         }
         else
         {
-            var action = Mathf.FloorToInt(act[0]);
-            switch (action)
+            var run = Mathf.FloorToInt(act[0]);
+            var turn = Mathf.FloorToInt(act[1]);
+            switch (run)
             {
                 case 1:
                     dirToGo = transform.forward * 1f;
                     break;
                 case 2:
-                    dirToGo = transform.forward * -1f;
+                    dirToGo = transform.forward * -0.5f;
                     break;
-                case 3:
+            }
+            switch (turn)
+            {
+                case 1:
                     rotateDir = transform.up * 1f;
                     break;
-                case 4:
+                case 2:
                     rotateDir = transform.up * -1f;
                     break;
             }
         }
-        transform.Rotate(rotateDir, Time.deltaTime * 150f);
-        rBody.AddForce(dirToGo * m_Academy.agentRunSpeed, ForceMode.VelocityChange);
+
+        transform.Rotate(rotateDir, Time.deltaTime * 150f * m_Academy.preyRotationSpeed);
+        transform.Translate(dirToGo * m_Academy.preyRunSpeed * Time.deltaTime, Space.World);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        AddReward(+1f / agentParameters.maxStep);
         MoveAgent(vectorAction);
 
-        float distanceToTarget = Vector3.Distance(this.transform.localPosition, Hunter.localPosition);
+        float distanceToHunter = Vector3.Distance(this.transform.localPosition, Hunter.localPosition);
+        float distanceToFood = Vector3.Distance(this.transform.localPosition, Food.localPosition);
+
+        // Caught By Hunter
+        if (distanceToHunter < 1.42f)
+        {
+            AddReward(-1.0f);
+            RespawnObject(transform);
+            RespawnObject(Food);
+        }
 
         // Reached target
-        if (distanceToTarget < 1.42f)
+        if (distanceToFood < 1.0f)
         {
-            SetReward(-1.0f);
-            MyDone();
+            AddReward(1.0f);
+            RespawnObject(Food);
         }
 
         // Fell off platform
         if (this.transform.localPosition.y < 0)
         {
             SetReward(-1.0f);
-            MyDone();
+            Done();
         }
     }
 
-    public void MyDone()
+    public void RespawnObject(Transform item)
     {
-        Debug.Log("Reward: " + GetCumulativeReward().ToString() + "\n" +
-            "MaxStep: " + agentParameters.maxStep);
-
-        Done();
+        rBody.angularVelocity = Vector3.zero;
+        rBody.velocity = Vector3.zero;
+        item.localPosition = new Vector3(
+            (Random.value * 8 - 4) * Scale,
+            0.5f,
+            (Random.value * 8 - 4) * Scale
+        );
     }
 }
