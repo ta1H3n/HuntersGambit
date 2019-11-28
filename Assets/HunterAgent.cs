@@ -5,7 +5,7 @@ using MLAgents;
 public class HunterAgent : Agent
 {
     public Transform Prey;
-    //public GameObject? Arena;
+    private Transform[] Food { get { return Academy.Food; } }
 
     RayPerception RayPer;
     Rigidbody rBody;
@@ -29,16 +29,18 @@ public class HunterAgent : Agent
 
     public override void CollectObservations()
     {
-        var rayDistance = Academy.hunterVisionRange;
-        float[] rayAngles = { 50f, 60f, 70f, 80f, 90f, 100f, 110f, 120f, 130f };
-        string[] detectableObjects = { "Prey", "Arena", "Food" };
-        var perception = RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f);
-        AddVectorObs(perception);
-        AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
+        var range = Academy.hunterVisionRange;
+        var angle = Academy.hunterVisionAngle;
+        var radius = Academy.hunterAwarenessRadius;
+        foreach (var food in Food)
+        {
+            AddVectorObs(HunterAcademy.GetDetection(transform, food, range, radius, angle, Color.red));
+        }
+        AddVectorObs(HunterAcademy.GetDetection(transform, Prey, range, radius, angle, Color.red));
 
         // Agent velocity
         AddVectorObs(rBody.velocity);
-
+        AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
         Monitor.Log("Hunter reward", GetCumulativeReward().ToString());
     }
 
@@ -96,6 +98,7 @@ public class HunterAgent : Agent
         if (distanceToTarget < 1.42f)
         {
             AddReward(1.0f);
+            Done();
         }
 
         // Fell off platform
@@ -105,23 +108,4 @@ public class HunterAgent : Agent
             Done();
         }
     }
-
-    //public static Vector3 PolarToCartesian(float radius, float angle)
-    //{
-    //    var x = radius * Mathf.Cos(RayPerception.DegreeToRadian(angle));
-    //    var z = radius * Mathf.Sin(RayPerception.DegreeToRadian(angle));
-    //    return new Vector3(x, 0f, z);
-    //}
-
-    //public void DrawVision(float[] rayAngles, float distance)
-    //{
-    //    foreach (var angle in rayAngles)
-    //    {
-    //        var end = transform.TransformDirection(
-    //            PolarToCartesian(distance, angle));
-    //        end.y = transform.position.y;
-    //        var start = transform.position;
-    //        Debug.DrawRay(start, end, Color.white, 1f, false);
-    //    }
-    //}
 }

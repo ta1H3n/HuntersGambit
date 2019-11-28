@@ -5,8 +5,8 @@ using MLAgents;
 public class PreyAgent : Agent
 {
     public Transform Hunter;
-    public Transform[] Food;
-    //public GameObject Arena;
+    public Transform Arena;
+    private Transform[] Food { get { return Academy.Food; } }
 
     Rigidbody rBody;
     HunterAcademy Academy;
@@ -26,8 +26,9 @@ public class PreyAgent : Agent
     public override void AgentReset()
     {
         Scale = Academy.resetParameters["arena_scale"];
-        //if (Arena != null)
-        //    Arena.transform.localScale = new Vector3(1 * Scale, 1, 1 * Scale);
+        Arena.transform.localScale = new Vector3(1 * Scale, 1, 1 * Scale);
+        if (Academy.resetParameters["arena"] == 0)
+            Arena.transform.localPosition = new Vector3(0, -10, 0);
 
         // Move the target to a new spot
         RespawnObject(transform);
@@ -37,15 +38,18 @@ public class PreyAgent : Agent
 
     public override void CollectObservations()
     {
-        var rayDistance = Academy.preyVisionRange;
-        float[] rayAngles = { 10f, 30f, 40f, 50f, 60f, 70f, 80f, 90f, 100f, 110f, 120f, 130f, 140f, 150f, 170f };
-        string[] detectableObjects = { "Hunter", "Arena", "Food" };
-        AddVectorObs(RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
+        var range = Academy.preyVisionRange;
+        var angle = Academy.preyVisionAngle;
+        var radius = Academy.preyAwarenessRadius;
+        foreach (var food in Food)
+        {
+            AddVectorObs(HunterAcademy.GetDetection(transform, food, range, radius, angle, Color.yellow));
+        }
+        AddVectorObs(HunterAcademy.GetDetection(transform, Hunter, range, radius, angle, Color.yellow));
 
         // Agent velocity
         AddVectorObs(rBody.velocity);
-
+        AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
         Monitor.Log("Prey reward", GetCumulativeReward().ToString());
     }
 
@@ -105,8 +109,8 @@ public class PreyAgent : Agent
             // Reached target
             if (distanceToFood < 1.0f)
             {
-                AddReward(1.0f);
-                RespawnObject(food);
+                AddReward(0.5f);
+                food.position = new Vector3(0, -1000, 0);
             }
         }
 
@@ -114,9 +118,7 @@ public class PreyAgent : Agent
         if (distanceToHunter < 1.42f)
         {
             AddReward(-1.0f);
-            RespawnObject(transform);
-            foreach (var food in Food)
-                RespawnObject(food);
+            Done();
         }
 
         // Fell off platform
@@ -137,21 +139,4 @@ public class PreyAgent : Agent
             (Random.value * 8 - 4) * Scale
         );
     }
-
-    //public static Vector3 PolarToCartesian(float radius, float angle)
-    //{
-    //    var x = radius * Mathf.Cos(RayPerception.DegreeToRadian(angle));
-    //    var z = radius * Mathf.Sin(RayPerception.DegreeToRadian(angle));
-    //    return new Vector3(x, 0f, z);
-    //}
-
-    //public void DrawVision(float[] rayAngles, float distance)
-    //{
-    //    var start = rBody.transform.localPosition;
-    //    foreach (var angle in rayAngles)
-    //    {
-    //        var end = PolarToCartesian(distance, angle);
-    //        Debug.DrawRay(start, end, Color.green);
-    //    }
-    //}
 }

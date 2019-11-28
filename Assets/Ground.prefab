@@ -418,7 +418,7 @@ GameObject:
   - component: {fileID: 7086928616119180088}
   - component: {fileID: 7086928616119180089}
   - component: {fileID: 7086928616119180094}
-  - component: {fileID: 7086928616119180092}
+  - component: {fileID: 5770925920815200765}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -495,11 +495,11 @@ BoxCollider:
   m_GameObject: {fileID: 7086928616119180093}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &7086928616119180092
+--- !u!54 &5770925920815200765
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -656,11 +656,11 @@ FixedJoint:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7086928616368764784}
-  m_ConnectedBody: {fileID: 7086928616119180092}
+  m_ConnectedBody: {fileID: 5770925920815200765}
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!114 &8928177728871595376
@@ -793,11 +793,7 @@ MonoBehaviour:
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   Hunter: {fileID: 7086928616368764748}
-  Food:
-  - {fileID: 5790499058558203908}
-  - {fileID: 7258186965837570730}
-  - {fileID: 1235632887808991079}
-  - {fileID: 5349570821490203415}
+  Arena: {fileID: 0}
 --- !u!54 &7086928616574483140
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -833,11 +829,11 @@ FixedJoint:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7086928616574483145}
-  m_ConnectedBody: {fileID: 5933366790986414536}
+  m_ConnectedBody: {fileID: 449826542366599634}
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &7427748000880949837
@@ -852,7 +848,7 @@ GameObject:
   - component: {fileID: 8262782995786348260}
   - component: {fileID: 5334630524535712532}
   - component: {fileID: 924469715161726483}
-  - component: {fileID: 5933366790986414536}
+  - component: {fileID: 449826542366599634}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -929,11 +925,11 @@ BoxCollider:
   m_GameObject: {fileID: 7427748000880949837}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &5933366790986414536
+--- !u!54 &449826542366599634
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

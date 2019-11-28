@@ -31,7 +31,7 @@ HunterBrain:
     train_interval: 2
     hidden_units: 256
     use_recurrent: false
-    max_steps: 2.0e5
+    max_steps: 3.0e5
     
 PreyBrain:
     batch_size: 128
@@ -40,7 +40,7 @@ PreyBrain:
     train_interval: 2
     hidden_units: 256
     use_recurrent: false
-    max_steps: 2.0e5
+    max_steps: 3.0e5
 
 FoodCollectorLearning:
     normalize: false
