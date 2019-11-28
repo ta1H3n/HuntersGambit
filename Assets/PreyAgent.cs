@@ -5,12 +5,12 @@ using MLAgents;
 public class PreyAgent : Agent
 {
     public Transform Hunter;
-    public Transform Food;
-    public GameObject Arena;
+    public Transform[] Food;
+    //public GameObject Arena;
 
     Rigidbody rBody;
-    HunterAcademy m_Academy;
-    RayPerception m_RayPer;
+    HunterAcademy Academy;
+    RayPerception RayPer;
 
     private float Scale;
 
@@ -18,27 +18,29 @@ public class PreyAgent : Agent
     {
         agentParameters.maxStep = 2000;
         base.InitializeAgent();
-        m_Academy = FindObjectOfType<HunterAcademy>();
+        Academy = FindObjectOfType<HunterAcademy>();
         rBody = GetComponent<Rigidbody>();
-        m_RayPer = GetComponent<RayPerception>();
+        RayPer = GetComponent<RayPerception>();
     }
 
     public override void AgentReset()
     {
-        Scale = m_Academy.resetParameters["arena_scale"];
-        Arena.transform.localScale = new Vector3(1 * Scale, 1, 1 * Scale);
+        Scale = Academy.resetParameters["arena_scale"];
+        //if (Arena != null)
+        //    Arena.transform.localScale = new Vector3(1 * Scale, 1, 1 * Scale);
 
         // Move the target to a new spot
         RespawnObject(transform);
-        RespawnObject(Food);
+        foreach (var food in Food)
+            RespawnObject(food);
     }
 
     public override void CollectObservations()
     {
-        var rayDistance = 12f;
-        float[] rayAngles = { 20f, 60f, 90f, 120f, 160f, 200f, 240f };
+        var rayDistance = Academy.preyVisionRange;
+        float[] rayAngles = { 10f, 30f, 40f, 50f, 60f, 70f, 80f, 90f, 100f, 110f, 120f, 130f, 140f, 150f, 170f };
         string[] detectableObjects = { "Hunter", "Arena", "Food" };
-        AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
 
         // Agent velocity
@@ -86,8 +88,8 @@ public class PreyAgent : Agent
             }
         }
 
-        transform.Rotate(rotateDir, Time.deltaTime * 150f * m_Academy.preyRotationSpeed);
-        transform.Translate(dirToGo * m_Academy.preyRunSpeed * Time.deltaTime, Space.World);
+        transform.Rotate(rotateDir, Time.deltaTime * 150f * Academy.preyRotationSpeed);
+        transform.Translate(dirToGo * Time.deltaTime * Academy.preyRunSpeed, Space.World);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -95,21 +97,26 @@ public class PreyAgent : Agent
         MoveAgent(vectorAction);
 
         float distanceToHunter = Vector3.Distance(this.transform.localPosition, Hunter.localPosition);
-        float distanceToFood = Vector3.Distance(this.transform.localPosition, Food.localPosition);
+
+        foreach (var food in Food)
+        {
+            float distanceToFood = Vector3.Distance(this.transform.localPosition, food.localPosition);
+            
+            // Reached target
+            if (distanceToFood < 1.0f)
+            {
+                AddReward(1.0f);
+                RespawnObject(food);
+            }
+        }
 
         // Caught By Hunter
         if (distanceToHunter < 1.42f)
         {
             AddReward(-1.0f);
             RespawnObject(transform);
-            RespawnObject(Food);
-        }
-
-        // Reached target
-        if (distanceToFood < 1.0f)
-        {
-            AddReward(1.0f);
-            RespawnObject(Food);
+            foreach (var food in Food)
+                RespawnObject(food);
         }
 
         // Fell off platform
@@ -130,4 +137,21 @@ public class PreyAgent : Agent
             (Random.value * 8 - 4) * Scale
         );
     }
+
+    //public static Vector3 PolarToCartesian(float radius, float angle)
+    //{
+    //    var x = radius * Mathf.Cos(RayPerception.DegreeToRadian(angle));
+    //    var z = radius * Mathf.Sin(RayPerception.DegreeToRadian(angle));
+    //    return new Vector3(x, 0f, z);
+    //}
+
+    //public void DrawVision(float[] rayAngles, float distance)
+    //{
+    //    var start = rBody.transform.localPosition;
+    //    foreach (var angle in rayAngles)
+    //    {
+    //        var end = PolarToCartesian(distance, angle);
+    //        Debug.DrawRay(start, end, Color.green);
+    //    }
+    //}
 }

@@ -5,40 +5,39 @@ using MLAgents;
 public class HunterAgent : Agent
 {
     public Transform Prey;
-    public GameObject Arena;
+    //public GameObject? Arena;
 
-    RayPerception h_RayPer;
-    Rigidbody p_rBody;
-    Rigidbody h_rBody;
-    HunterAcademy m_Academy;
+    RayPerception RayPer;
+    Rigidbody rBody;
+    HunterAcademy Academy;
     public override void InitializeAgent()
     {
         agentParameters.maxStep = 2000;
         base.InitializeAgent();
-        m_Academy = FindObjectOfType<HunterAcademy>();
-        h_RayPer = GetComponent<RayPerception>();
-        h_rBody = GetComponent<Rigidbody>();
-        p_rBody = Prey.GetComponent<Rigidbody>();
+        Academy = FindObjectOfType<HunterAcademy>();
+        RayPer = GetComponent<RayPerception>();
+        rBody = GetComponent<Rigidbody>();
     }
 
     public override void AgentReset()
     {
         // If the Agent fell, zero its momentum
-        this.h_rBody.angularVelocity = Vector3.zero;
-        this.h_rBody.velocity = Vector3.zero;
+        this.rBody.angularVelocity = Vector3.zero;
+        this.rBody.velocity = Vector3.zero;
         this.transform.localPosition = new Vector3(0, 0.5f, 0);
     }
 
     public override void CollectObservations()
     {
-        var rayDistance = 12f;
-        float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
+        var rayDistance = Academy.hunterVisionRange;
+        float[] rayAngles = { 50f, 60f, 70f, 80f, 90f, 100f, 110f, 120f, 130f };
         string[] detectableObjects = { "Prey", "Arena", "Food" };
-        AddVectorObs(h_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        var perception = RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f);
+        AddVectorObs(perception);
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
 
         // Agent velocity
-        AddVectorObs(h_rBody.velocity);
+        AddVectorObs(rBody.velocity);
 
         Monitor.Log("Hunter reward", GetCumulativeReward().ToString());
     }
@@ -82,8 +81,8 @@ public class HunterAgent : Agent
             }
         }
 
-        transform.Rotate(rotateDir, Time.deltaTime * 150f * m_Academy.hunterRotationSpeed);
-        transform.Translate(dirToGo * m_Academy.hunterRunSpeed * Time.deltaTime, Space.World);
+        transform.Rotate(rotateDir, Time.deltaTime * 150f * Academy.hunterRotationSpeed);
+        transform.Translate(dirToGo * Academy.hunterRunSpeed * Time.deltaTime, Space.World);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -106,4 +105,23 @@ public class HunterAgent : Agent
             Done();
         }
     }
+
+    //public static Vector3 PolarToCartesian(float radius, float angle)
+    //{
+    //    var x = radius * Mathf.Cos(RayPerception.DegreeToRadian(angle));
+    //    var z = radius * Mathf.Sin(RayPerception.DegreeToRadian(angle));
+    //    return new Vector3(x, 0f, z);
+    //}
+
+    //public void DrawVision(float[] rayAngles, float distance)
+    //{
+    //    foreach (var angle in rayAngles)
+    //    {
+    //        var end = transform.TransformDirection(
+    //            PolarToCartesian(distance, angle));
+    //        end.y = transform.position.y;
+    //        var start = transform.position;
+    //        Debug.DrawRay(start, end, Color.white, 1f, false);
+    //    }
+    //}
 }
