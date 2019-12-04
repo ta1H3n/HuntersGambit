@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using System.Linq;
 
 public class HunterAgent : Agent
 {
@@ -21,7 +22,6 @@ public class HunterAgent : Agent
 
     public override void AgentReset()
     {
-        // If the Agent fell, zero its momentum
         this.rBody.angularVelocity = Vector3.zero;
         this.rBody.velocity = Vector3.zero;
         this.transform.localPosition = new Vector3(0, 0.5f, 0);
@@ -32,14 +32,45 @@ public class HunterAgent : Agent
         var range = Academy.hunterVisionRange;
         var angle = Academy.hunterVisionAngle;
         var radius = Academy.hunterAwarenessRadius;
-        foreach (var food in Food)
-        {
-            AddVectorObs(HunterAcademy.GetDetection(transform, food, range, radius, angle, Color.red));
-        }
-        AddVectorObs(HunterAcademy.GetDetection(transform, Prey, range, radius, angle, Color.red));
+        float[] detections = new float[2 + Food.Length * 2];
 
-        // Agent velocity
-        AddVectorObs(rBody.velocity);
+        var detection = HunterAcademy.GetDetection(transform, Prey, range, radius, angle, Color.red);
+        detections[0] = detection[0];
+        detections[1] = detection[1];
+
+        for (int i = 0; i < Food.Length; i++)
+        {
+            detection = HunterAcademy.GetDetection(transform, Food[i], range, radius, angle, Color.red);
+            detections[2 + 2 * i] = detection[0];
+            detections[2 + 2 * i + 1] = detection[1];
+        }
+        AddVectorObs(detections);
+
+        Monitor.Log("Distance", detections[0].ToString("n2"), transform);
+        Monitor.Log("Angle", detections[1].ToString("n2"), transform);
+        Monitor.Log("Hunter", string.Join(" ", detections.Select(x => x.ToString("n2"))));
+
+        //var facing = transform.forward;
+        //Monitor.Log("x", facing.x.ToString("n2"), transform);
+        //Monitor.Log("z", facing.z.ToString("n2"), transform);
+
+        //var heading = Prey.position - transform.position;
+        //var heading2 = (Prey.position - transform.position).normalized;
+        //Monitor.Log("xh", heading2.x.ToString("n2"), transform);
+        //Monitor.Log("zh", heading2.z.ToString("n2"), transform);
+
+        //var direction = (facing + heading2) / 2;
+        //direction.z = direction.z >= 0 ? direction.z : direction.z * -1;
+        //direction.x = direction.x >= 0 ? direction.x : direction.x * -1;
+        //Monitor.Log("xd", direction.x.ToString("n2"), transform);
+        //Monitor.Log("zd", direction.z.ToString("n2"), transform);
+
+        //Monitor.Log("Angle", Vector3.SignedAngle(transform.forward, heading, Vector3.up).ToString());
+        //Monitor.Log("AngleNorm", Vector3.SignedAngle(transform.forward, heading.normalized, Vector3.up).ToString());
+
+        // Agent position
+        AddVectorObs(transform.localPosition);
+        AddVectorObs(transform.forward);
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
         Monitor.Log("Hunter reward", GetCumulativeReward().ToString());
     }

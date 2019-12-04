@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PreyDiscretePlayer
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 24
+    vectorObservationSize: 17
     numStackedVectorObservations: 1
     vectorActionSize: 0300000003000000
     cameraResolutions: []

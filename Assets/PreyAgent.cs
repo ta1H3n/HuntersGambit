@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using System.Linq;
 
 public class PreyAgent : Agent
 {
@@ -41,14 +42,27 @@ public class PreyAgent : Agent
         var range = Academy.preyVisionRange;
         var angle = Academy.preyVisionAngle;
         var radius = Academy.preyAwarenessRadius;
-        foreach (var food in Food)
-        {
-            AddVectorObs(HunterAcademy.GetDetection(transform, food, range, radius, angle, Color.yellow));
-        }
-        AddVectorObs(HunterAcademy.GetDetection(transform, Hunter, range, radius, angle, Color.yellow));
+        float[] detections = new float[2 + Food.Length*2];
 
-        // Agent velocity
-        AddVectorObs(rBody.velocity);
+        var detection = HunterAcademy.GetDetection(transform, Hunter, range, radius, angle, Color.yellow);
+        detections[0] = detection[0];
+        detections[1] = detection[1];
+
+        for (int i = 0; i < Food.Length; i++)
+        {
+            detection = HunterAcademy.GetDetection(transform, Food[i], range, radius, angle, Color.yellow);
+            detections[2 + 2 * i] = detection[0];
+            detections[2 + 2 * i + 1] = detection[1];
+        }
+        AddVectorObs(detections);
+
+        Monitor.Log("Distance", detections[0].ToString("n2"), transform);
+        Monitor.Log("Angle", detections[1].ToString("n2"), transform);
+        Monitor.Log("Prey", string.Join(" ", detections.Select(x => x.ToString("n2"))));
+
+        // Agent position
+        AddVectorObs(transform.localPosition);
+        AddVectorObs(transform.forward);
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
         Monitor.Log("Prey reward", GetCumulativeReward().ToString());
     }
@@ -109,7 +123,7 @@ public class PreyAgent : Agent
             // Reached target
             if (distanceToFood < 1.0f)
             {
-                AddReward(0.5f);
+                AddReward(1F / Food.Length);
                 food.position = new Vector3(0, -1000, 0);
             }
         }

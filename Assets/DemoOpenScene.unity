@@ -202,8 +202,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 157682900}
-  m_LocalRotation: {x: 0.086883694, y: -0.91239, z: 0.30124772, w: 0.2631457}
-  m_LocalPosition: {x: 21.094635, y: 24.928627, z: 32.212006}
+  m_LocalRotation: {x: 0.7071069, y: 0.000000029802319, z: 0.000000014901159, w: 0.7071067}
+  m_LocalPosition: {x: 0.7130147, y: 51.035896, z: -0.2632394}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -546,12 +546,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7086928616368764751, guid: f508a16245fc4414d9dc6a133efb75a6,
-        type: 3}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 84ed43875b75334498f4dbb81ca92cf9,
-        type: 2}
     - target: {fileID: 7086928616574483143, guid: f508a16245fc4414d9dc6a133efb75a6,
         type: 3}
       propertyPath: brain
@@ -563,5 +557,11 @@ PrefabInstance:
       propertyPath: Arena
       value: 
       objectReference: {fileID: 1446894728}
+    - target: {fileID: 7086928616368764751, guid: f508a16245fc4414d9dc6a133efb75a6,
+        type: 3}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 84ed43875b75334498f4dbb81ca92cf9,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f508a16245fc4414d9dc6a133efb75a6, type: 3}
