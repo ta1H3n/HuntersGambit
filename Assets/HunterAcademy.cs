@@ -15,8 +15,6 @@ public class HunterAcademy : Academy
     public float preyAwarenessRadius = 5F;
     public float gravityMultiplier = 3F; // use ~3 to make things less floaty
 
-    public Transform[] Food;
-
     public override void InitializeAcademy()
     {
         Physics.gravity *= gravityMultiplier;
@@ -29,7 +27,7 @@ public class HunterAcademy : Academy
 
     public static float[] GetDetection(Transform from, Transform to, float range, float radius, float angle, Color color)
     {
-        float[] res = new float[4];
+        float[] res = new float[2];
 
         var heading = to.position - from.position;
         float distance = heading.sqrMagnitude;
@@ -37,7 +35,8 @@ public class HunterAcademy : Academy
         {
             var signedAngle = Vector3.SignedAngle(from.forward, heading.normalized, Vector3.up);
             var viewAngle = signedAngle >= 0 ? signedAngle : signedAngle * -1;
-            signedAngle = (signedAngle / 360) + 0.5f;
+            //signedAngle = (viewAngle / 360) + 0.5f;
+            signedAngle = signedAngle / 360;
             if (distance < radius * radius || viewAngle < angle)
             {
                 Physics.Raycast(from.position, heading.normalized, out var hit, Mathf.Infinity);
@@ -51,14 +50,41 @@ public class HunterAcademy : Academy
                 else
                 {
                     Debug.DrawRay(from.position, heading, Color.black, 0.01F);
-
                 }
             }
         }
 
-        res[0] = -1;
-        res[1] = -1;
+        res[0] = 0f;
+        res[1] = 0f;
         return res;
+    }
+
+    public static bool IsDetected(Transform from, Transform to, float range, float radius, float angle, Color color)
+    {
+
+        var heading = to.position - from.position;
+        float distance = heading.sqrMagnitude;
+        if (distance < range * range)
+        {
+            var signedAngle = Vector3.SignedAngle(from.forward, heading.normalized, Vector3.up);
+            var viewAngle = signedAngle >= 0 ? signedAngle : signedAngle * -1;
+            //signedAngle = (signedAngle / 360) + 0.5f;
+            if (distance < radius * radius || viewAngle < angle)
+            {
+                Physics.Raycast(from.position, heading.normalized, out var hit, Mathf.Infinity);
+                if (hit.transform != null && to.Equals(hit.transform))
+                {
+                    Debug.DrawRay(from.position, heading, color, 0.01F);
+                    return true;
+                }
+                else
+                {
+                    Debug.DrawRay(from.position, heading, Color.black, 0.01F);
+                }
+            }
+        }
+
+        return false;
     }
 
     //public static float[] GetDetection(Transform from, Transform to, float range, float radius, float angle, Color color)

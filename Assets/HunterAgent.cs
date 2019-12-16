@@ -6,11 +6,16 @@ using System.Linq;
 public class HunterAgent : Agent
 {
     public Transform Prey;
-    private Transform[] Food { get { return Academy.Food; } }
+
+    public Transform[] Food;
 
     RayPerception RayPer;
     Rigidbody rBody;
     HunterAcademy Academy;
+
+    public Vector3[] FoodPositions { get; set; }
+    public Vector3 PreyPosition { get; set; }
+
     public override void InitializeAgent()
     {
         agentParameters.maxStep = 2000;
@@ -18,10 +23,19 @@ public class HunterAgent : Agent
         Academy = FindObjectOfType<HunterAcademy>();
         RayPer = GetComponent<RayPerception>();
         rBody = GetComponent<Rigidbody>();
+        FoodPositions = new Vector3[Food.Length];
+        PreyPosition = Vector3.positiveInfinity;
     }
 
     public override void AgentReset()
     {
+        FoodPositions = new Vector3[Food.Length];
+        for (int i = 0; i < Food.Length; i++)
+        {
+            FoodPositions[i] = Vector3.zero;
+        }
+        PreyPosition = Vector3.zero;
+
         this.rBody.angularVelocity = Vector3.zero;
         this.rBody.velocity = Vector3.zero;
         this.transform.localPosition = new Vector3(0, 0.5f, 0);
@@ -32,23 +46,57 @@ public class HunterAgent : Agent
         var range = Academy.hunterVisionRange;
         var angle = Academy.hunterVisionAngle;
         var radius = Academy.hunterAwarenessRadius;
-        float[] detections = new float[2 + Food.Length * 2];
 
-        var detection = HunterAcademy.GetDetection(transform, Prey, range, radius, angle, Color.red);
-        detections[0] = detection[0];
-        detections[1] = detection[1];
+        //var detection = HunterAcademy.GetDetection(transform, Prey, range, radius, angle, Color.red);
+        //AddVectorObs(detection);
+        //int detectionSize = detection.Length;
+        //float[] detections = new float[detectionSize + Food.Length * detectionSize];
+
+        //for (int l = 0; l < detectionSize; l++)
+        //{
+        //    detections[l] = detection[l];
+        //}
+
+        if (HunterAcademy.IsDetected(transform, Prey, range, radius, angle, Color.red))
+        {
+            PreyPosition = Prey.localPosition;
+            AddVectorObs(PreyPosition);
+            AddVectorObs(true);
+        }
+        else
+        {
+            AddVectorObs(PreyPosition);
+            AddVectorObs(false);
+        }
 
         for (int i = 0; i < Food.Length; i++)
         {
-            detection = HunterAcademy.GetDetection(transform, Food[i], range, radius, angle, Color.red);
-            detections[2 + 2 * i] = detection[0];
-            detections[2 + 2 * i + 1] = detection[1];
-        }
-        AddVectorObs(detections);
+            //detection = HunterAcademy.GetDetection(transform, Food[i], range, radius, angle, Color.red);
+            //AddVectorObs(detection);
 
-        Monitor.Log("Distance", detections[0].ToString("n2"), transform);
-        Monitor.Log("Angle", detections[1].ToString("n2"), transform);
-        Monitor.Log("Hunter", string.Join(" ", detections.Select(x => x.ToString("n2"))));
+            //for (int l = 0; l < detectionSize; l++)
+            //{
+            //    detections[detectionSize + detectionSize * i + l] = detection[l];
+            //}
+
+            if (HunterAcademy.IsDetected(transform, Food[i], range, radius, angle, Color.red))
+            {
+                FoodPositions[i] = Food[i].localPosition;
+                AddVectorObs(FoodPositions[i]);
+                AddVectorObs(true);
+            }
+            else
+            {
+                AddVectorObs(FoodPositions[i]);
+                AddVectorObs(false);
+            }
+        }
+
+        //AddVectorObs(detections);
+
+        //Monitor.Log("Distance", detections[0].ToString("n2"), transform);
+        //Monitor.Log("Angle", detections[1].ToString("n2"), transform);
+        //Monitor.Log("Hunter", string.Join(" ", detections.Select(x => x.ToString("n2"))));
 
         //var facing = transform.forward;
         //Monitor.Log("x", facing.x.ToString("n2"), transform);
