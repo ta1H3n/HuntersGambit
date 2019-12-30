@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PreyBrain
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 39
+    vectorObservationSize: 79
     numStackedVectorObservations: 1
     vectorActionSize: 0300000003000000
     cameraResolutions: []
@@ -21,5 +21,5 @@ MonoBehaviour:
     - 
     - 
     vectorActionSpaceType: 0
-  model: {fileID: 0}
+  model: {fileID: 5022602860645237092, guid: 9863d25d13efe57418090fabf62418ab, type: 3}
   inferenceDevice: 0

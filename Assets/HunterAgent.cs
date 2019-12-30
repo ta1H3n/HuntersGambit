@@ -31,8 +31,8 @@ public class HunterAgent : Agent
 
     public override void CollectObservations()
     {
-        var rayDistance = 12f;
-        float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
+        var rayDistance = 16f;
+        float[] rayAngles = { 40f, 50f, 60f, 70f, 80f, 90f, 100f, 110f, 120f, 130f, 140f };
         string[] detectableObjects = { "Prey", "Arena", "Food" };
         AddVectorObs(h_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
@@ -88,7 +88,7 @@ public class HunterAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        AddReward(-1f / agentParameters.maxStep);
+        //AddReward(-1f / agentParameters.maxStep);
         MoveAgent(vectorAction);
 
         float distanceToTarget = Vector3.Distance(this.transform.localPosition, Prey.localPosition);

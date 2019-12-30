@@ -35,8 +35,8 @@ public class PreyAgent : Agent
 
     public override void CollectObservations()
     {
-        var rayDistance = 12f;
-        float[] rayAngles = { 20f, 60f, 90f, 120f, 160f, 200f, 240f };
+        var rayDistance = 20f;
+        float[] rayAngles = { 10f, 30f, 40f, 50f, 60f, 70f, 80f, 90f, 100f, 110f, 120f, 130f, 140f, 150f, 170f };
         string[] detectableObjects = { "Hunter", "Arena", "Food" };
         AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
