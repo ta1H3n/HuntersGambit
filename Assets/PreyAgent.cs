@@ -5,8 +5,16 @@ using MLAgents;
 public class PreyAgent : Agent
 {
     public Transform Hunter;
-    public Transform Food;
     public GameObject Arena;
+    public Transform[] Food;
+
+    public float RunSpeed = 3F;
+    public float RotationSpeed = 1F;
+    public float SprintSpeedMultiplier = 1.5F;
+    public float MaxStamina = 500F;
+
+    private float Stamina = 0F;
+    private int Eaten;
 
     Rigidbody rBody;
     HunterAcademy m_Academy;
@@ -30,7 +38,10 @@ public class PreyAgent : Agent
 
         // Move the target to a new spot
         RespawnObject(transform);
-        RespawnObject(Food);
+        foreach (var food in Food)
+            RespawnObject(food);
+
+        Stamina = MaxStamina;
     }
 
     public override void CollectObservations()
@@ -39,12 +50,19 @@ public class PreyAgent : Agent
         float[] rayAngles = { 10f, 30f, 40f, 50f, 60f, 70f, 80f, 90f, 100f, 110f, 120f, 130f, 140f, 150f, 170f };
         string[] detectableObjects = { "Hunter", "Arena", "Food" };
         AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+
+        // Steps remaining until environment reset
         AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
 
-        // Agent velocity
-        AddVectorObs(rBody.velocity);
+        // Disable sprint if low stamina
+        if (Stamina <= 2)
+            SetActionMask(0, 3);
+
+        // Agent stamina
+        AddVectorObs(Stamina / MaxStamina);
 
         Monitor.Log("Prey reward", GetCumulativeReward().ToString());
+        Monitor.Log("Stamina", Stamina / MaxStamina, transform);
     }
 
     public void MoveAgent(float[] act)
@@ -68,11 +86,20 @@ public class PreyAgent : Agent
             var turn = Mathf.FloorToInt(act[1]);
             switch (run)
             {
+                case 0:
+                    Stamina += 3;
+                    break;
                 case 1:
                     dirToGo = transform.forward * 1f;
+                    Stamina += 1;
                     break;
                 case 2:
                     dirToGo = transform.forward * -0.5f;
+                    Stamina += 1;
+                    break;
+                case 3:
+                    dirToGo = transform.forward * 1f * SprintSpeedMultiplier;
+                    Stamina -= 3;
                     break;
             }
             switch (turn)
@@ -86,30 +113,44 @@ public class PreyAgent : Agent
             }
         }
 
-        transform.Rotate(rotateDir, Time.deltaTime * 150f * m_Academy.preyRotationSpeed);
-        transform.Translate(dirToGo * m_Academy.preyRunSpeed * Time.deltaTime, Space.World);
+        if (Stamina > MaxStamina)
+            Stamina = MaxStamina;
+        if (Stamina < 0)
+            Stamina = 0;
+
+        transform.Rotate(rotateDir, Time.deltaTime * 150f * RotationSpeed);
+        transform.Translate(dirToGo * RunSpeed * Time.deltaTime, Space.World);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         MoveAgent(vectorAction);
 
-        float distanceToHunter = Vector3.Distance(this.transform.localPosition, Hunter.localPosition);
-        float distanceToFood = Vector3.Distance(this.transform.localPosition, Food.localPosition);
+        foreach (var food in Food)
+        {
+            float distanceToFood = Vector3.Distance(this.transform.localPosition, food.localPosition);
+
+            // Ate Food
+            if (distanceToFood < 1.0f)
+            {
+                Eaten++;
+                AddReward(1.0f / Food.Length);
+                food.position = new Vector3(0, -1000, 0);
+                if (Eaten == Food.Length)
+                {
+                    Eaten = 0;
+                    Done();
+                }
+            }
+        }
+
+        float distanceToHunter = Vector3.Distance(transform.localPosition, Hunter.localPosition);
 
         // Caught By Hunter
         if (distanceToHunter < 1.42f)
         {
-            AddReward(-1.0f);
-            RespawnObject(transform);
-            RespawnObject(Food);
-        }
-
-        // Reached target
-        if (distanceToFood < 1.0f)
-        {
-            AddReward(1.0f);
-            RespawnObject(Food);
+            AddReward(-1.0f / Food.Length);
+            Done();
         }
 
         // Fell off platform
@@ -129,5 +170,10 @@ public class PreyAgent : Agent
             0.5f,
             (Random.value * 8 - 4) * Scale
         );
+    }
+
+    public void Broadcasttest()
+    {
+        Debug.Log("broadsvaes");
     }
 }

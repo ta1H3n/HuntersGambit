@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: HunterDiscreteBrain
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 27
+    vectorObservationSize: 57
     numStackedVectorObservations: 1
-    vectorActionSize: 0300000003000000
+    vectorActionSize: 0400000003000000
     cameraResolutions: []
     vectorActionDescriptions:
     - 
@@ -36,3 +36,9 @@ MonoBehaviour:
   - key: 100
     branchIndex: 1
     value: 1
+  - key: 304
+    branchIndex: 0
+    value: 3
+  - key: 115
+    branchIndex: 0
+    value: 2
